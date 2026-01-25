@@ -165,4 +165,4 @@ https://github.com/user-attachments/assets/0634166a-76bd-48bd-89d1-b83c7f732a45
 - 추종성을 테스트하기 위해 Ramp
 - 내구성을 테스트하기 위해 Harmonic
 
-=> 입력한 힘의 주파수 대비 EE의 흔들림을 Bode Plot을 그려서 확인, settling time, overshoot, Steady-State오차 등을 분석
+=> 입력한 힘의 주파수 대비 EE의 흔들림을 Bode Plot을 그려서 확인, settling time, overshoot, Steady-State오차 등을 분석하여 동적 거동 실험을 진행
