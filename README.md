@@ -24,6 +24,29 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
 
 또한, 목표 도달 및 동적 안정성/에너지 효율성을 확보하기 위한 보상 체계는 크게 세 가지 요소인 (1) 다단계 거리 보상 (2) 각 조인트의 토크 최소화 및 가속도의 급격한 변화 제약 (3) 안전성 제약으로 학습하였습니다.
 
+# 가동범위 정의
+Richable Workspace 정의
+-> Rank(A)=n
+-> det(A) ≠ 0
+-> A의 역행렬 A^-1이 존재할 때
+=> 특이점이 아닌 상태를 만족하기 위해 다음과 같은 한계점을 정의하였습니다.
+
+        # 2. 행동(Action)과 관측(Observation) 공간 정의
+        # 행동: 7개 관절의 속도/위치 변화량 (-1.0 ~ 1.0)
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(7,), dtype=np.float32)
+        # 관측: 20개 데이터 (관절각도 7 + 속도 7 + 손끝위치 3 + 목표상대위치 3)
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(20,), dtype=np.float32)
+        
+        # 3. 로봇 하드웨어 설정 (관절 인덱스 및 한계값)
+        self.joint_indices = [0, 1, 2, 3, 4, 5, 6] 
+        self.ee_link_index = 11 # Panda 로봇의 손끝(End-Effector) 링크 번호
+        
+        # 관절 각도 하한(ll)과 상한(ul) - 로봇이 꺾일 수 있는 물리적 한계
+        self.ll = np.array([-2.89, -1.76, -2.89, -3.07, -2.89, -0.01, -2.89])
+        self.ul = np.array([ 2.89,  1.76,  2.89, -0.06,  2.89,  3.75,  2.89])
+        self.joint_range = self.ul - self.ll
+
+
 # 보상 체계
         def step(self, action):
         # 1. 행동 스케일링 (너무 급격하게 움직이지 않도록 0.03 곱함)
@@ -42,6 +65,10 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
         distance = np.linalg.norm(self.target_pos - ee_pos)
 
 # 보상 함수
+(1) 다단계 거리 보상 = 거리 보상 + 정밀 접근 보상
+(2) 각 조인트의 토크 최소화 
+(3) 가속도의 급격한 변화 발생 방지
+
         # 5. [보상 설계 - 매우 중요]
         # (1) 거리 보상: 가까울수록 점수가 덜 깎임 (음수 보상)
         reward = -distance * 20.0 
@@ -63,3 +90,6 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
             reward += 150.0 # 큰 성공 보상
         
         return obs, reward, terminated, truncated, {"distance": distance}
+
+
+
