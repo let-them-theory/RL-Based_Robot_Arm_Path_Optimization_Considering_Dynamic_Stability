@@ -24,4 +24,15 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
 
 또한, 목표 도달 및 동적 안정성/에너지 효율성을 확보하기 위한 보상 체계는 크게 세 가지 요소인 (1) 다단계 거리 보상 (2) 각 조인트의 토크 최소화 및 가속도의 급격한 변화 제약 (3) 안전성 제약으로 학습하였습니다.
 
-# 
+# 라이브러리
+import gymnasium as gym
+from gymnasium import spaces
+import pybullet as p
+import pybullet_data as pd
+import numpy as np
+import time
+import os
+
+from stable_baselines3 import SAC
+from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
+from stable_baselines3.common.env_util import make_vec_env
