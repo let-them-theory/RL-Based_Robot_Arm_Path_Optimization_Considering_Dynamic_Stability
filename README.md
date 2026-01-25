@@ -24,4 +24,42 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
 
 또한, 목표 도달 및 동적 안정성/에너지 효율성을 확보하기 위한 보상 체계는 크게 세 가지 요소인 (1) 다단계 거리 보상 (2) 각 조인트의 토크 최소화 및 가속도의 급격한 변화 제약 (3) 안전성 제약으로 학습하였습니다.
 
-# 라이브러리
+# 보상 함수 체계
+cd
+def step(self, action):
+        # 1. 행동 스케일링 (너무 급격하게 움직이지 않도록 0.03 곱함)
+        real_action = action * 0.03 
+        
+        # 2. 모터 제어 명령 (Position Control)
+        # 현재 각도 + 행동(변화량) = 목표 각도
+        p.setJointMotorControlArray(..., targetPositions=target_q, forces=[500]*7)
+        
+        # 3. 물리 엔진 업데이트 (0.05초 동안 시뮬레이션 진행)
+        for _ in range(int(self.control_dt / self.sim_step)):
+            p.stepSimulation()
+
+        # 4. 관측 및 거리 계산
+        obs = self._get_obs()
+        distance = np.linalg.norm(self.target_pos - ee_pos)
+
+        # 5. [보상 설계 - 매우 중요]
+        # (1) 거리 보상: 가까울수록 점수가 덜 깎임 (음수 보상)
+        reward = -distance * 20.0 
+        
+        # (2) 정밀 접근 보상: 아주 가까워지면 추가 점수
+        if distance < 0.02:
+            reward += (0.02 - distance) * 200.0 
+        
+        # (3) 에너지 패널티: 힘(Torque)을 많이 쓰거나, 급격히 움직이면 감점
+        reward -= 0.01 * np.mean(np.square(self.current_torques))
+        reward -= 0.1 * np.mean(np.square(action - self.prev_action))
+        
+        # 6. 종료 조건 (성공 또는 충돌)
+        if len(contact_points) > 0: # 충돌 시
+            reward -= 10.0
+            terminated = True
+        elif distance < 0.005: # 목표 도달 성공 시
+            terminated = True
+            reward += 150.0 # 큰 성공 보상
+        
+        return obs, reward, terminated, truncated, {"distance": distance}
