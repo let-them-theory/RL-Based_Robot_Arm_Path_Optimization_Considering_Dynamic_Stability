@@ -95,7 +95,7 @@ Richable Workspace 정의
         return obs, reward, terminated, truncated, {"distance": distance}
 
 # 학습 환경 설정
-학습은 SAC 알고리즘으로 코어 14개를 사용하여 cmd 환경에서 병렬연산으로 1000만회 학습하였습니다. 
+학습은 SAC 알고리즘으로 코어 14개를 사용하여 cmd 환경에서 직접 병렬연산으로 1000만회 학습하였습니다. 
         
         if __name__ == "__main__":
             NUM_CPU = 14  # CPU 코어 사용 개수
@@ -127,3 +127,16 @@ Richable Workspace 정의
             
             # 4. 저장
             model.save(MODEL_NAME)
+
+# 프로젝트 결과 및 고찰
+- 동적 보상이 없이 거리 보상으로만 학습했을 때
+
+https://github.com/user-attachments/assets/96da4a5b-14f0-4ee9-944c-526123f9346c
+
+
+- 동적 안정성을 고려하여 학습햇을 때
+
+
+https://github.com/user-attachments/assets/0634166a-76bd-48bd-89d1-b83c7f732a45
+
+
