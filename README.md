@@ -48,6 +48,9 @@ Richable Workspace 정의
 
 
 # 보상 체계
+행동을 정의하고 조인트가 스스로 자신의 상태를 파악하고 물리 엔진을 기반으로 계산하여 판단 할 수 있도록 함
+
+
         def step(self, action):
         # 1. 행동 스케일링 (너무 급격하게 움직이지 않도록 0.03 곱함)
         real_action = action * 0.03 
@@ -91,5 +94,36 @@ Richable Workspace 정의
         
         return obs, reward, terminated, truncated, {"distance": distance}
 
-
-
+# 학습 환경 설정
+학습은 SAC 알고리즘으로 코어 14개를 사용하여 cmd 환경에서 병렬연산으로 1000만회 학습하였습니다. 
+        
+        if __name__ == "__main__":
+            NUM_CPU = 14  # CPU 코어 사용 개수
+            TOTAL_TIMESTEPS = 10000000 # 총 학습 횟수 (1천만 회)
+            
+            # ... (중략)
+        
+            # 1. 벡터화 환경 생성 (병렬 처리)
+            env = make_vec_env(
+                PandaLongRunEnv, 
+                n_envs=NUM_CPU, 
+                vec_env_cls=SubprocVecEnv, # 멀티프로세싱 사용
+                env_kwargs={'render': False} 
+            )
+            env = VecMonitor(env) # 학습 로그 기록용 래퍼
+        
+            # 2. SAC 모델 정의
+            model = SAC(
+                "MlpPolicy", # 이미지(CNN)가 아닌 수치 데이터(MLP) 사용
+                env, 
+                verbose=1,
+                learning_rate=2e-4, # 학습률
+                batch_size=512,     # 한 번에 학습할 데이터 양
+                tensorboard_log="./panda_50m_logs/" # 로그 저장 경로
+            )
+        
+            # 3. 학습 시작
+            model.learn(total_timesteps=TOTAL_TIMESTEPS)
+            
+            # 4. 저장
+            model.save(MODEL_NAME)
