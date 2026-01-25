@@ -137,6 +137,7 @@ Richable Workspace 정의
         pip install torch torchvision
         
 vs_Community에서 c++을 활용한 데스크톱 개발항목 체크해서 설치
+
 https://download.visualstudio.microsoft.com/download/pr/64dbe648-9527-4b8e-9b08-04d2228e1191/a3f10a06535a1a22678db2a5561b8599f42687c68beec08ac560a197e2901980/vs_Community.exe
 
 # 프로젝트 결과 분석
