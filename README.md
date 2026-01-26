@@ -24,6 +24,57 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
 
 또한, 목표 도달 및 동적 안정성/에너지 효율성을 확보하기 위한 보상 체계는 크게 세 가지 요소인 (1) 다단계 거리 보상 (2) 각 조인트의 토크 최소화 및 가속도의 급격한 변화 제약 (3) 안전성 제약으로 학습하였습니다.
 
+# 프로젝트 구조
+
+[ 1. 문제 정의 (Problem) ]
+      |
+      | "7자유도의 무한한 해 & 동적 불안정성 해결"
+      v
+[ 2. 환경 구축 (Environment) ]
+      |
+      +-- 시뮬레이터: PyBullet (Franka Panda)
+      +-- 최적화 기술: IK 기반 고속 리셋 (FPS 50배 향상)
+      |
+      v
+[ 3. 강화학습 (RL Training) ] <--------+
+      |                                |
+      +-- 알고리즘: SAC (Soft Actor-Critic)
+      +-- 보상함수: 거리 + 에너지 최소화 + 진동 억제
+      +-- 데이터: Replay Buffer (Off-Policy)
+      |                                |
+      +--------------------------------+ (Feedback Loop)
+      |
+      v
+[ 4. 성능 평가 (Evaluation) ]
+      |
+      +-- 성공률: 95% 달성 (오차 < 5mm)
+      +-- 안정성: Base Frame 진동 제어 확인
+      |
+      v
+[ 5. 결론 (Conclusion) ]
+      |
+      "Fast & Stable: 고속 정밀 파지 시스템 완성"
+
+# 학습 환경 구축
+gymnasium공간에 pybullet을 사용하여 Franka panda를 불러왔습니다.
+
+학습 알고리즘은 SAC 방식을 사용하여 거리보상 + 엔트로피를 높여 무한한 해 공간을 다양하게 탐험합니다. 
+
+그리고 '에너지 최소화 보상 함수'를 통해, 무한한 자세들 중 가장 에너지를 적게 쓰고 진동이 없는 최적의 자세를 스스로 찾아내도록 학습시켰습니다.
+
+        import gymnasium as gym
+        from gymnasium import spaces
+        import pybullet as p
+        import pybullet_data as pd
+        import numpy as np
+        import time
+        import os
+        
+        from stable_baselines3 import SAC
+        from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
+        from stable_baselines3.common.env_util import make_vec_env
+
+
 # 가동범위 정의
 Richable Workspace 정의
 -> Rank(A)=n
@@ -94,7 +145,7 @@ Richable Workspace 정의
         
         return obs, reward, terminated, truncated, {"distance": distance}
 
-# 학습 환경 설정
+# 학습 과정
 학습은 SAC 알고리즘으로 코어 14개를 사용하여 cmd 환경에서 직접 병렬연산으로 1000만회 학습하였습니다. 
         
         if __name__ == "__main__":
