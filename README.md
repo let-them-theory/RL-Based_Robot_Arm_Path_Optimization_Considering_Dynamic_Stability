@@ -75,6 +75,20 @@ gymnasium공간에 pybullet을 사용하여 Franka panda를 불러왔습니다.
         from stable_baselines3.common.env_util import make_vec_env
 
 
+# 5-1 라이브러리 실행을 위한 패키지파일 설치
+       
+        pip install gymnasium
+        pip install pybullet 
+        pip install stable-baselines3
+        pip install shimmy
+        pip install torch torchvision
+        
+vs_Community에서 c++을 활용한 데스크톱 개발항목 체크해서 설치
+
+https://download.visualstudio.microsoft.com/download/pr/64dbe648-9527-4b8e-9b08-04d2228e1191/a3f10a06535a1a22678db2a5561b8599f42687c68beec08ac560a197e2901980/vs_Community.exe
+
+
+
 # 6. 가동범위 정의
 Richable Workspace 정의
 -> Rank(A)=n
@@ -210,8 +224,10 @@ https://github.com/user-attachments/assets/0634166a-76bd-48bd-89d1-b83c7f732a45
 
 그러나 좋은 정확도를 가진 모델을 학습시켰지만, 이 모델이 역학적으로 안정적인 자세로 목표점에 도달했는가에 대한 의문은 해소하지 못했습니다.
 
-그래서 다음 프로젝트 주제는 이번에 학습한 모델이 역학적으로 안정적인 모델인가에 대한 주제로 진행하려고 합니다.
+다음 프로젝트 주제는 이번에 학습한 모델이 역학적으로 안정적인 모델인가에 대한 주제로 진행하려고 합니다.
 
+
+#12 다음 프로젝트 개요
 프로젝트의 초기 설계는 아래와 같습니다.
 
 1. EE에 x, y, z 방향에 랜덤하게 input을 가함
@@ -221,16 +237,4 @@ https://github.com/user-attachments/assets/0634166a-76bd-48bd-89d1-b83c7f732a45
 - 내구성을 테스트하기 위해 Harmonic
 
 => 입력한 힘의 주파수 대비 EE의 흔들림을 Bode Plot을 그려서 확인, settling time, overshoot, Steady-State오차 등을 분석하여 동적 거동 실험을 진행
-
-# 12. 라이브러리 실행을 위한 패키지파일 설치
-       
-        pip install gymnasium
-        pip install pybullet 
-        pip install stable-baselines3
-        pip install shimmy
-        pip install torch torchvision
-        
-vs_Community에서 c++을 활용한 데스크톱 개발항목 체크해서 설치
-
-https://download.visualstudio.microsoft.com/download/pr/64dbe648-9527-4b8e-9b08-04d2228e1191/a3f10a06535a1a22678db2a5561b8599f42687c68beec08ac560a197e2901980/vs_Community.exe
 
