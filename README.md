@@ -26,34 +26,34 @@ EE가 효율적으로 목표점에 도달하며 동적 안정성과 에너지 �
 
 # 프로젝트 구조
 
-[ 1. 문제 정의 (Problem) ]
-      |
-      | "7자유도의 무한한 해 & 동적 불안정성 해결"
-      v
-[ 2. 환경 구축 (Environment) ]
-      |
-      +-- 시뮬레이터: PyBullet (Franka Panda)
-      +-- 최적화 기술: IK 기반 고속 리셋 (FPS 50배 향상)
-      |
-      v
-[ 3. 강화학습 (RL Training) ] <--------+
-      |                                |
-      +-- 알고리즘: SAC (Soft Actor-Critic)
-      +-- 보상함수: 거리 + 에너지 최소화 + 진동 억제
-      +-- 데이터: Replay Buffer (Off-Policy)
-      |                                |
-      +--------------------------------+ (Feedback Loop)
-      |
-      v
-[ 4. 성능 평가 (Evaluation) ]
-      |
-      +-- 성공률: 95% 달성 (오차 < 5mm)
-      +-- 안정성: Base Frame 진동 제어 확인
-      |
-      v
-[ 5. 결론 (Conclusion) ]
-      |
-      "Fast & Stable: 고속 정밀 파지 시스템 완성"
+      [ 1. 문제 정의 (Problem) ]
+            |
+            | "7자유도의 무한한 해 & 동적 불안정성 해결"
+            v
+      [ 2. 환경 구축 (Environment) ]
+            |
+            +-- 시뮬레이터: PyBullet (Franka Panda)
+            +-- 최적화 기술: IK 기반 고속 리셋 (FPS 50배 향상)
+            |
+            v
+      [ 3. 강화학습 (RL Training) ] <--------+
+            |                                |
+            +-- 알고리즘: SAC (Soft Actor-Critic)
+            +-- 보상함수: 거리 + 에너지 최소화 + 진동 억제
+            +-- 데이터: Replay Buffer (Off-Policy)
+            |                                |
+            +--------------------------------+ (Feedback Loop)
+            |
+            v
+      [ 4. 성능 평가 (Evaluation) ]
+            |
+            +-- 성공률: 95% 달성 (오차 < 5mm)
+            +-- 안정성: Base Frame 진동 제어 확인
+            |
+            v
+      [ 5. 결론 (Conclusion) ]
+            |
+            "Fast & Stable: 고속 정밀 파지 시스템 완성"
 
 # 학습 환경 구축
 gymnasium공간에 pybullet을 사용하여 Franka panda를 불러왔습니다.
