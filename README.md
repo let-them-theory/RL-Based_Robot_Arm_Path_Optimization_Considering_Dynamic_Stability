@@ -143,13 +143,16 @@ https://download.visualstudio.microsoft.com/download/pr/64dbe648-9527-4b8e-9b08-
 # 프로젝트 결과 분석
 - 동적 보상이 없이 거리 보상으로만 학습했을 때
 
+https://youtu.be/T843mICs6Xk
+
 https://github.com/user-attachments/assets/96da4a5b-14f0-4ee9-944c-526123f9346c
 
 
 
 
-- 동적 안정성을 고려하여 학습햇을 때
+- 동적 안정성을 고려하여 학습했을 때
 
+https://youtu.be/gy8SVOMf_HE
 
 https://github.com/user-attachments/assets/0634166a-76bd-48bd-89d1-b83c7f732a45
 
