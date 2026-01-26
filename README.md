@@ -206,7 +206,11 @@ https://github.com/user-attachments/assets/96da4a5b-14f0-4ee9-944c-526123f9346c
 
 - 동적 안정성을 고려하여 학습했을 때
 
-https://youtu.be/gy8SVOMf_HE
+https://youtu.be/lcWTP0zjzf0
+
+
+
+https://github.com/user-attachments/assets/e35eaa76-38a4-44c4-b02b-1fddbe5882b3
 
 
 
