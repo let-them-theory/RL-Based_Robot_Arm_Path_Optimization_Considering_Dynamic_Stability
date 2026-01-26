@@ -208,7 +208,6 @@ https://github.com/user-attachments/assets/96da4a5b-14f0-4ee9-944c-526123f9346c
 
 https://youtu.be/gy8SVOMf_HE
 
-https://github.com/user-attachments/assets/0634166a-76bd-48bd-89d1-b83c7f732a45
 
 
 
