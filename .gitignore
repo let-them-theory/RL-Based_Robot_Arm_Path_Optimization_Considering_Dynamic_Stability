@@ -1,0 +1,15 @@
+# 가상환경 / 캐시
+.venv/
+__pycache__/
+
+# 학습 중간 산출물 (용량이 커서 제외, 학습 스크립트로 재생성 가능)
+checkpoints_*/
+e0509_logs/
+e0509_2f85_logs/
+e0509_2f85_nostab_logs/
+seed_logs/
+*.log
+
+# 더 이상 사용하지 않는 모델 (그리퍼 없음 / 보상 버그 버전 / 1M 스텝 중간 결과)
+e0509_sac_10m.zip
+e0509_2f85_sac_1m.zip

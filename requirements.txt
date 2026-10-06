@@ -1,0 +1,9 @@
+# Python 3.10에서 검증한 버전
+pybullet==3.2.7
+gymnasium==1.4.0
+stable_baselines3==2.9.0
+torch==2.14.1
+numpy==2.2.6
+matplotlib==3.10.9
+scipy==1.15.3
+tensorboard==2.21.0
