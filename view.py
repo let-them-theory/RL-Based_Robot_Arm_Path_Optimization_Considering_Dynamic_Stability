@@ -5,10 +5,12 @@ import numpy as np
 import pybullet as p
 from stable_baselines3 import SAC
 
-from Doosan_E0509_train import E0509Env
+from e0509_env import E0509Env
 
 # ==============================================================================
-# A/B 모델 나란히 보기: 모델마다 GUI 창 1개(별도 프로세스), 같은 목표/초기자세에서 동시에 출발
+# 학습된 모델 GUI 재생
+#   - 모델 1개: 창 1개로 재생 + 콘솔에 에피소드별 결과/성공률
+#   - 모델 2개 (A/B): 모델마다 창 1개(별도 프로세스), 같은 목표/초기자세에서 동시에 출발
 #   - 화면 표시: 경과 시간, 목표까지 거리, TCP 속도, 동적 베이스 반력(제어 주기 평균), 성공 여부
 #   - 성공 후 hold 시간 동안 계속 실행해 도달 후 움직임도 확인
 #   - PyBullet 화면 글자는 한글 미지원 → 영어 표시
@@ -45,6 +47,8 @@ def worker(label, model_path, seeds, hold, speed, barrier, render=True):
                  [0.0, -0.7, 1.1], 1.3, [0.1, 0.1, 0.1])
             if reached_at is None and (terminated or truncated):
                 reached_at = k
+                print(f"{label} | target #{ep_idx + 1} (seed {seed}): "
+                      f"{'성공' if terminated else '실패'} {k * env.control_dt:.2f}s, 오차 {info['distance'] * 1000:.2f}mm")
                 if terminated:
                     n_success += 1
                     show("result", f"REACHED in {k * env.control_dt:.2f}s  (success {n_success}/{ep_idx + 1})",
@@ -65,23 +69,36 @@ def worker(label, model_path, seeds, hold, speed, barrier, render=True):
     p.disconnect()
 
 
+class _NoBarrier:
+    def wait(self):
+        pass
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="E0509 A/B 모델 동시 GUI 비교")
-    parser.add_argument("--models", nargs=2, default=["e0509_2f85_sac_v2_s1.zip", "e0509_2f85_sac_nostab_s2.zip"])
-    parser.add_argument("--labels", nargs=2, default=["A: stability penalty", "B: baseline (no penalty)"])
-    parser.add_argument("--seed0", type=int, default=10000, help="비교 평가(compare)와 같은 목표를 보려면 10000")
+    parser = argparse.ArgumentParser(description="E0509 모델 GUI 재생 (1개) / A/B 동시 비교 (2개)")
+    parser.add_argument("models", nargs="*", default=["models/stability_s1.zip", "models/baseline_s2.zip"],
+                        help="모델 1개 또는 2개 (기본: A 시드 1 vs B 시드 2)")
+    parser.add_argument("--labels", nargs="+", help="창에 표시할 이름 (영어)")
+    parser.add_argument("--seed0", type=int, default=10000, help="evaluate.py와 같은 목표를 보려면 10000")
     parser.add_argument("--n", type=int, default=10, help="볼 목표 개수")
-    parser.add_argument("--seeds", type=int, nargs="*", help="특정 목표 seed만 보기 (예: --seeds 10041)")
+    parser.add_argument("--seeds", type=int, nargs="*", help="특정 목표 seed만 보기 (예: --seeds 10010)")
     parser.add_argument("--hold", type=float, default=2.0, help="성공 후 계속 관찰할 시간 (s)")
     parser.add_argument("--speed", type=float, default=1.0, help="재생 속도 배율 (0.5 = 슬로모션)")
     args = parser.parse_args()
+    assert len(args.models) in (1, 2), "모델은 1개 또는 2개"
 
     seeds = args.seeds if args.seeds else list(range(args.seed0, args.seed0 + args.n))
-    ctx = mp.get_context("spawn")
-    barrier = ctx.Barrier(2)
-    procs = [ctx.Process(target=worker, args=(label, path, seeds, args.hold, args.speed, barrier))
-             for label, path in zip(args.labels, args.models)]
-    for proc in procs:
-        proc.start()
-    for proc in procs:
-        proc.join()
+    default_labels = ["A: stability penalty", "B: baseline (no penalty)"]
+    labels = args.labels or ([args.models[0]] if len(args.models) == 1 else default_labels)
+
+    if len(args.models) == 1:
+        worker(labels[0], args.models[0], seeds, args.hold, args.speed, _NoBarrier())
+    else:
+        ctx = mp.get_context("spawn")
+        barrier = ctx.Barrier(2)
+        procs = [ctx.Process(target=worker, args=(label, path, seeds, args.hold, args.speed, barrier))
+                 for label, path in zip(labels, args.models)]
+        for proc in procs:
+            proc.start()
+        for proc in procs:
+            proc.join()

@@ -1,7 +1,7 @@
 # 시드별 A/B 비교
 
-- A = A_안정성: `e0509_2f85_sac_v2_s1.zip`, `e0509_2f85_sac_v2_s2.zip`, `e0509_2f85_sac_v2_s3.zip`
-- B = B_기준: `e0509_2f85_sac_nostab.zip`, `e0509_2f85_sac_nostab_s2.zip`, `e0509_2f85_sac_nostab_s3.zip`
+- A = A_안정성: `models/stability_s1.zip`, `models/stability_s2.zip`, `models/stability_s3.zip`
+- B = B_기준: `models/baseline_s1.zip`, `models/baseline_s2.zip`, `models/baseline_s3.zip`
 - 목표 100개 (seed 10000~), 모든 모델 동일. 실행마다 성공한 목표의 평균 → 실행 간 평균±표준편차
 - 변화율 = (A 실행 평균 − B 실행 평균) / B 실행 평균. 일관성 = A의 가장 나쁜 실행이 B의 가장 좋은 실행보다 나은가
 

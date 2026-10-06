@@ -17,8 +17,7 @@
 7. [한계](#7-한계)
 8. [실행 방법](#8-실행-방법)
 9. [파일 구조](#9-파일-구조)
-10. [프로젝트 이력 (Franka Panda → Doosan E0509)](#10-프로젝트-이력-franka-panda--doosan-e0509)
-11. [라이선스와 출처](#11-라이선스와-출처)
+10. [라이선스와 출처](#10-라이선스와-출처)
 
 ---
 
@@ -41,11 +40,9 @@
 | 알고리즘 | SAC (Stable-Baselines3), 병렬 환경 14개, 학습 500만 스텝 (실행당 약 52분, i5-14600KF + RTX 4060) |
 | 관절 토크 한계 | URDF 정격값 J1~J3 194Nm, J4~J6 66Nm |
 
-> 프로젝트는 7축 Franka Panda로 시작했으며 현재는 6축 E0509로 전환했습니다. 저장소 이름의 "7-Axis"는 초기 버전을 가리킵니다 ([10. 이력](#10-프로젝트-이력-franka-panda--doosan-e0509)).
-
 ## 3. 강화학습 환경
 
-`Doosan_E0509_train.py`의 `E0509Env`
+`e0509_env.py`의 `E0509Env`
 
 | 항목 | 내용 |
 |---|---|
@@ -111,7 +108,7 @@ r = −20·d − 200·min(d, 0.02)                       거리 (d: TCP–목표
 | 동적 ZMP 이동 최댓값 | 66.1 / 64.7 / 69.9 mm | 92.0 / 83.2 / 78.8 mm | 66.9 ± 2.7 | 84.7 ± 6.7 | **−21.0%** | 모든 A < 모든 B |
 | 관절 jerk RMS | 17.7 / 17.3 / 18.4 rad/s³ | 25.7 / 23.8 / 25.0 rad/s³ | 17.8 ± 0.5 | 24.8 ± 1.0 | **−28.4%** | 모든 A < 모든 B |
 
-![시드별 주 지표](compare_seeds_results/seeds_primary.png)
+![시드별 주 지표](results/seeds/seeds_primary.png)
 
 ### 6.2 베이스 프레임 힘·모멘트와 관절 토크 (같은 목표끼리 짝지은 평균, 시드 쌍 3개)
 
@@ -127,13 +124,13 @@ r = −20·d − 200·min(d, 0.02)                       거리 (d: TCP–목표
 | J3 (팔꿈치) 동적 토크 최댓값 | 5.99 Nm | 7.16 Nm | −16% |
 | J4 / J5 / J6 동적 토크 최댓값 | 1.28 / 0.56 / 0.031 Nm | 1.49 / 0.65 / 0.038 Nm | −14 / −14 / −18% |
 
-39개 역학 항목 전부가 3개 시드 쌍 모두에서 A가 낮았습니다(전체 표: [`dynamics_tables/summary_table.md`](dynamics_tables/summary_table.md)). 다만 이 항목들은 모두 "팔의 가속도"라는 같은 원인에서 나오므로 독립적인 증거 39개가 아니라 **"관성 하중 감소"라는 하나의 결과**로 보는 것이 정확합니다.
+39개 역학 항목 전부가 3개 시드 쌍 모두에서 A가 낮았습니다(전체 표: [`results/dynamics/summary_table.md`](results/dynamics/summary_table.md)). 다만 이 항목들은 모두 "팔의 가속도"라는 같은 원인에서 나오므로 독립적인 증거 39개가 아니라 **"관성 하중 감소"라는 하나의 결과**로 보는 것이 정확합니다.
 
 보상에 직접 넣지 않은 역학량도 함께 감소했습니다: 토크 변화율 −25%, 운동 에너지 최댓값 −14%, 기계적 일 −9%, TCP 가속도 −9%, 도달 후 잔류 베이스 반력 −34%.
 
 **같은 시행 예시 (초기 거리 최장 목표, 시드 2 쌍)** — B는 약 1.0초 감속 구간에서 Fx 19N, My 15Nm, J2 11Nm가 동시에 튀지만 A는 완만하게 감속합니다.
 
-![같은 시행 비교](dynamics_tables/trial_10010.png)
+![같은 시행 비교](results/dynamics/trial_10010.png)
 
 ### 6.3 과제 성능과 재현되지 않은 효과
 
@@ -149,7 +146,7 @@ r = −20·d − 200·min(d, 0.02)                       거리 (d: TCP–목표
 
 ### 6.4 보조 분석 (시드 1, v1 가중치 — 참고용)
 
-[`compare_results/`](compare_results/)에는 시드 1 모델 한 쌍으로 수행한 상세 분석이 있습니다: 스텝 응답(상승·정착 시간, 퍼센트 오버슈트), 실험적 주파수 응답(목표를 사인파로 움직여 추종 이득·위상·반력 전달률 측정). 이전 README에서 "다음 프로젝트"로 계획했던 스텝/하모닉 입력 분석의 첫 시도입니다. 시드 1개이고 비선형 시스템의 기술 함수(진폭 20mm)이므로 참고용으로만 봐야 합니다.
+[`results/pair_seed1/`](results/pair_seed1/)에는 시드 1 모델 한 쌍(A는 v1 가중치)으로 수행한 상세 분석이 있습니다: 스텝 응답(상승·정착 시간, 퍼센트 오버슈트), 실험적 주파수 응답(목표를 사인파로 움직여 추종 이득·위상·반력 전달률 측정). 시드 1개이고 비선형 시스템의 기술 함수(진폭 20mm)이므로 참고용으로만 봐야 합니다.
 
 ## 7. 한계
 
@@ -169,62 +166,45 @@ pip install -r requirements.txt        # Python 3.10에서 검증
 
 | 목적 | 명령 |
 |---|---|
-| A 학습 (안정성 보상) | `python Doosan_E0509_train.py --seed 1` |
-| B 학습 (기준) | `python Doosan_E0509_train_baseline.py --seed 1` |
-| 시드 실험 일괄 실행 (5회 순차) | `./run_seeds.sh` |
-| GUI로 한 모델 테스트 | `python Doosan_E0509_test.py e0509_2f85_sac_v2_s1.zip` |
-| **A/B 나란히 보기 (창 2개, 같은 목표 동시 출발)** | `python Doosan_E0509_viewer.py` (특정 목표: `--seeds 10010`, 슬로모션: `--speed 0.5`) |
-| 시드별 비교 | `python Doosan_E0509_compare_seeds.py --a e0509_2f85_sac_v2_s{1,2,3}.zip --b e0509_2f85_sac_nostab.zip e0509_2f85_sac_nostab_s{2,3}.zip` |
-| 성분별 역학량 표·같은 시행 시계열 | `python Doosan_E0509_dynamics_table.py` |
-| 한 쌍 상세 비교 (스텝 응답 등) | `python Doosan_E0509_compare.py --models A.zip B.zip` |
-| 주파수 응답 | `python Doosan_E0509_bode.py --models A.zip B.zip` |
+| A 학습 (안정성 보상) | `python train.py --seed 1` |
+| B 학습 (기준, 안정성 페널티 없음) | `python train.py --baseline --seed 1` |
+| 시드 실험 일괄 실행 (A/B × 시드 1~3, 순차) | `./run_seeds.sh` |
+| GUI로 한 모델 재생 | `python view.py models/stability_s1.zip` |
+| **A/B 나란히 보기 (창 2개, 같은 목표 동시 출발)** | `python view.py` (특정 목표: `--seeds 10010`, 슬로모션: `--speed 0.5`) |
+| 시드별 비교 | `python evaluate.py seeds` |
+| 성분별 역학량 표·같은 시행 시계열 | `python evaluate.py dynamics` |
+| 한 쌍 상세 비교 (스텝 응답 등) | `python evaluate.py pair --models A.zip B.zip` |
+| 주파수 응답 | `python evaluate.py bode --models A.zip B.zip` |
 
-학습 중 텐서보드: `tensorboard --logdir e0509_2f85_logs`
+학습 결과는 `models/<조건>_s<시드>.zip`으로 저장되고, `evaluate.py`/`view.py`의 기본값은 `models/`의 최종 모델을 사용합니다.
+
+학습 중 텐서보드: `tensorboard --logdir logs`
 
 ## 9. 파일 구조
 
 ```
-Doosan_E0509_train.py            환경(E0509Env) + A 학습. stability / record 옵션
-Doosan_E0509_train_baseline.py   B 학습 (stability=False)
-run_seeds.sh                     시드 실험 순차 실행
-Doosan_E0509_test.py             GUI 단일 모델 테스트
-Doosan_E0509_viewer.py           A/B 동시 GUI 비교
-Doosan_E0509_compare.py          한 쌍 상세 비교 (역학 지표, 스텝 응답, 그래프)
-Doosan_E0509_compare_seeds.py    시드(학습 실행) 단위 비교
-Doosan_E0509_dynamics_table.py   베이스 힘·모멘트 / 관절 토크 성분별 표와 같은 시행 시계열
-Doosan_E0509_bode.py             실험적 주파수 응답
-assets/e0509/                    E0509 URDF(+그리퍼 결합본), 메시
-assets/robotiq_2f85/             2F-85 메시
-e0509_2f85_sac_v2_s{1,2,3}.zip   A 최종 모델 (시드별)
-e0509_2f85_sac_nostab*.zip       B 최종 모델 (시드 1, 2, 3)
-e0509_2f85_sac.zip               A v1 가중치 모델 (6.4 보조 분석용)
-compare_seeds_results/           시드별 비교 결과
-dynamics_tables/                 성분별 역학량 표, 같은 시행 표·그래프·CSV
-compare_results/                 시드 1 상세 분석 (스텝 응답, 주파수 응답 등)
-seed_report.md                   시드 실험 진행 기록과 해석
-Project_final_1000*.py, panda_*  이전 버전 (Franka Panda)
+e0509_env.py        강화학습 환경 (E0509Env): 관측/행동/보상/성공 조건. stability, record 옵션
+train.py            SAC 학습. 기본 = A(안정성 페널티), --baseline = B
+run_seeds.sh        시드 실험 일괄 실행 (A/B × 시드 1~3)
+evaluate.py         평가 서브커맨드: pair / seeds / dynamics / bode
+view.py             GUI 재생: 모델 1개 또는 A/B 2개 동시
+assets/
+  e0509/            E0509 URDF (+그리퍼 결합본 e0509_2f85.urdf), 메시, 라이선스
+  robotiq_2f85/     2F-85 메시, 라이선스
+models/
+  stability_s{1,2,3}.zip    A 최종 모델 (시드별)
+  baseline_s{1,2,3}.zip     B 최종 모델 (시드별, s1은 SAC 시드 미고정으로 학습)
+  stability_v1_s1.zip       A v1 가중치 모델 (6.4 보조 분석용)
+results/
+  seeds/            시드별 비교 (seeds_summary.md, seeds_primary.png)
+  dynamics/         성분별 역학량 표, 같은 시행 표·그래프·CSV
+  pair_seed1/       시드 1 상세 분석 (스텝 응답, 주파수 응답 등)
+  seed_report.md    시드 실험 진행 기록과 해석
 ```
 
-체크포인트, 텐서보드 로그, 학습 로그는 용량 때문에 저장소에서 제외했습니다(학습 스크립트로 재생성 가능).
+학습 중 생성되는 `checkpoints/`, `logs/`는 용량 때문에 저장소에서 제외했습니다(`train.py`로 재생성 가능).
 
-## 10. 프로젝트 이력 (Franka Panda → Doosan E0509)
-
-초기 버전(`Project_final_1000.py`, 7축 Franka Panda, 1000만 스텝)은 목표 5mm 이내 95% 도달을 보고했지만, 이후 코드 검토에서 다음 문제가 확인되어 E0509 버전에서 수정했습니다.
-
-| 문제 | 수정 |
-|---|---|
-| 목표 근처 스텝 보상이 양수 → 근처에 머무는 reward hacking 가능 | 스텝 보상 ≤ 0 |
-| 충돌 시 −10 후 종료 → 충돌로 에피소드를 끝내는 편이 이득일 수 있음 | 종료 없이 스텝마다 감점 |
-| 토크 페널티가 중력 토크에 지배됨 (정지 자세에서도 큰 감점) | 중력 보상분을 뺀 동적 토크만 사용 |
-| 스무딩 페널티가 직전 행동에 의존하지만 관측에 없음 | 직전 행동들을 관측에 추가 |
-| IK 한계 리스트 길이(7)가 Panda 자유도(9)와 불일치 → 관절 한계 무시 | 자유도와 일치시키고 IK 결과의 한계 검사 |
-| 정적 평가만 수행 (성공률) | 역학량·시드 단위 통제 비교 |
-
-이전 README의 "다음 프로젝트"(동적 안정성 정량 평가, 스텝·하모닉 입력 응답, 보드 선도)는 이 버전의 5~6장에서 일부 수행했습니다.
-
-이전 버전 시연 영상: [거리 보상만](https://youtu.be/T843mICs6Xk) / [동적 안정성 보상 포함](https://youtu.be/lcWTP0zjzf0)
-
-## 11. 라이선스와 출처
+## 10. 라이선스와 출처
 
 - E0509 URDF·메시: [DoosanRobotics/doosan-robot2](https://github.com/DoosanRobotics/doosan-robot2) `dsr_description2` (BSD-3-Clause, `assets/e0509/LICENSE`). 메시 경로만 PyBullet용 STL로 변경.
 - Robotiq 2F-85 메시: doosan-robot2 `mujoco_models/2f85` (MuJoCo Menagerie 파생, BSD-2-Clause, `assets/robotiq_2f85/LICENSE`). MJCF 바디를 고정 조인트 URDF로 변환, 장착 위치는 doosan-robot2 `dsr_merge_gripper.py`와 동일.

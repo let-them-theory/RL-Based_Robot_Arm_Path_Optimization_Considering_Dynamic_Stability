@@ -3,20 +3,12 @@ from gymnasium import spaces
 import pybullet as p
 import pybullet_data as pd
 import numpy as np
-import time
 import os
-import argparse
-
-# Stable Baselines3
-from stable_baselines3 import SAC
-from stable_baselines3.common.vec_env import SubprocVecEnv
-from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.callbacks import CheckpointCallback
 
 URDF_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "e0509", "e0509_2f85.urdf")
 
 # ==============================================================================
-# 1. 두산로보틱스 E0509 (6축) + Robotiq 2F-85 (고정) 도달 학습 환경
+# 두산로보틱스 E0509 (6축) + Robotiq 2F-85 (고정) 목표점 도달 강화학습 환경
 # ==============================================================================
 class E0509Env(gym.Env):
     JOINT_NAMES = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
@@ -280,65 +272,3 @@ class E0509Env(gym.Env):
         info = {"distance": distance, "ee_speed": ee_speed, "contact": in_contact, "success": terminated,
                 "torque_cost": torque_cost, "base_cost": base_cost, "smooth_cost": smooth_cost, "jerk_cost": jerk_cost}
         return obs, reward, terminated, truncated, info
-
-# ==============================================================================
-# 2. 메인 학습 블록 (기본 500만 스텝, --seed / --timesteps 인자)
-# ==============================================================================
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--seed", type=int, default=1, help="환경과 SAC(신경망 초기값/탐험/리플레이 샘플링)를 함께 고정")
-    parser.add_argument("--timesteps", type=int, default=5_000_000)
-    args = parser.parse_args()
-
-    NUM_CPU = 14
-    TOTAL_TIMESTEPS = args.timesteps
-    MODEL_NAME = f"e0509_2f85_sac_v2_s{args.seed}"
-
-    print("-" * 60)
-    print(f"🚀 [E0509 Training] 총 {TOTAL_TIMESTEPS:,} 스텝, 환경 {NUM_CPU}개, 시드 {args.seed}")
-    print("-" * 60)
-
-    # make_vec_env가 각 환경을 Monitor로 감싸므로 VecMonitor는 사용하지 않음
-    env = make_vec_env(
-        E0509Env,
-        n_envs=NUM_CPU,
-        seed=args.seed,
-        vec_env_cls=SubprocVecEnv,
-        env_kwargs={'render': False}
-    )
-
-    model = SAC(
-        "MlpPolicy",
-        env,
-        verbose=1,
-        learning_rate=2e-4,
-        buffer_size=1000000,
-        batch_size=512,
-        ent_coef='auto',
-        gamma=0.99,
-        tau=0.005,
-        train_freq=1,
-        gradient_steps=1,
-        seed=args.seed,
-        tensorboard_log="./e0509_2f85_logs/"
-    )
-
-    # 약 50만 스텝마다 체크포인트 저장 (save_freq는 VecEnv 호출 단위)
-    checkpoint_cb = CheckpointCallback(
-        save_freq=max(500_000 // NUM_CPU, 1),
-        save_path=f"./checkpoints_e0509_2f85_v2_s{args.seed}/",
-        name_prefix=MODEL_NAME
-    )
-
-    try:
-        start_time = time.time()
-        model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=checkpoint_cb, tb_log_name=f"SAC_v2_s{args.seed}")
-        end_time = time.time()
-        print(f"✅ 학습 완료! 소요 시간: {(end_time - start_time)/3600:.2f}시간")
-    except KeyboardInterrupt:
-        print("\n🛑 학습 중단. 현재까지의 모델을 저장합니다.")
-
-    model.save(MODEL_NAME)
-    print(f"💾 최종 모델 저장 완료: {MODEL_NAME}.zip")
-
-    env.close()

@@ -1,6 +1,6 @@
 # 역학량 성분별 비교 요약 (같은 시행끼리 짝지어 평균)
 
-- 시드 쌍: `e0509_2f85_sac_v2_s1.zip` vs `e0509_2f85_sac_nostab.zip`, `e0509_2f85_sac_v2_s2.zip` vs `e0509_2f85_sac_nostab_s2.zip`, `e0509_2f85_sac_v2_s3.zip` vs `e0509_2f85_sac_nostab_s3.zip`
+- 시드 쌍: `models/stability_s1.zip` vs `models/baseline_s1.zip`, `models/stability_s2.zip` vs `models/baseline_s2.zip`, `models/stability_s3.zip` vs `models/baseline_s3.zip`
 - 목표 100개 (seed 10000~), 시드 쌍마다 A/B 둘 다 성공한 목표만 사용 → 에피소드별 동작 구간 최댓값/RMS의 평균
 - 베이스 힘/모멘트: 바닥 원점(로봇 베이스 프레임) 기준 동적 성분(중력 제외). Mx/My = 전도 모멘트, Mz = 수직축 반작용 토크
 - 관절 토크: 실제 τ는 중력 보상 포함, 동적 τ_dyn = τ − τ_g. 모두 제어 주기(0.05s) 평균

@@ -9,7 +9,7 @@
 - B: 안정성 페널티 없음 — 시드 1(기존 모델), 2, 3
 - 공통: 5M 스텝, 같은 하이퍼파라미터, 같은 성공 조건(5mm + 2cm/s), 평가 목표 100개 동일(seed 10000~10099)
 - 분석 단위 = 학습 실행 1회 (실행마다 목표 100개 평균 → 조건별 3개 값 비교)
-- 상세 표: `compare_seeds_results/seeds_summary.md`, 그래프: `compare_seeds_results/seeds_primary.png`
+- 상세 표: `results/seeds/seeds_summary.md`, 그래프: `results/seeds/seeds_primary.png`
 
 ## 주 지표 (사전 정의)
 | 지표 | A (시드 1/2/3) | B (시드 1/2/3) | A 평균 | B 평균 | 변화 | 일관성 |
@@ -52,12 +52,12 @@
 - 시드 3개는 최소 수준. 더 탄탄하게 하려면 시드 5개 (추가 4회, 약 3.5시간)
 
 ## 파일
-- 모델: `e0509_2f85_sac_v2_s{1,2,3}.zip`(A), `e0509_2f85_sac_nostab.zip`, `e0509_2f85_sac_nostab_s{2,3}.zip`(B)
-- 학습 로그: `seed_runs.log`, `seed_logs/`, 텐서보드 `e0509_2f85_logs/SAC_v2_s*`, `e0509_2f85_nostab_logs/SAC_s*`
-- 재실행: `.venv/bin/python Doosan_E0509_compare_seeds.py --a e0509_2f85_sac_v2_s{1,2,3}.zip --b e0509_2f85_sac_nostab.zip e0509_2f85_sac_nostab_s{2,3}.zip`
-- 장면 보기 (A v2 시드 1 vs B 시드 2 예시): `.venv/bin/python Doosan_E0509_viewer.py --models e0509_2f85_sac_v2_s1.zip e0509_2f85_sac_nostab_s2.zip`
+- 모델: `models/stability_s{1,2,3}.zip`(A), `models/baseline_s{1,2,3}.zip`(B)
+- 학습 로그 (로컬, 저장소 제외): `logs/seed_runs.log`, `logs/seed_runs/`, 텐서보드 `logs/stability/`, `logs/baseline/`
+- 재실행: `python evaluate.py seeds`
+- 장면 보기 (A 시드 1 vs B 시드 2): `python view.py models/stability_s1.zip models/baseline_s2.zip`
 
-## 추가: 역학량 성분별 비교 (`dynamics_tables/`)
+## 추가: 역학량 성분별 비교 (`results/dynamics/`, `python evaluate.py dynamics`)
 - `summary_table.md`: 베이스 프레임(바닥 원점) 동적 힘 Fx/Fy/Fz, 모멘트 Mx/My/Mz, 관절 J1~J6 토크(실제/동적, 최댓값/RMS/정격 대비) — 시드 쌍 3개 × 같은 목표 100개
 - 39개 역학 항목 전부 3개 시드 쌍 모두에서 A가 낮음 (−4% ~ −23%). 도달 시간/최종 거리는 섞임
 - `trial_<seed>.md/.png/_timeseries.csv`: 같은 시행(초기 거리 최단 10016 / 중앙 10008 / 최장 10010)의 성분별 표, 시계열 그래프, 20Hz 시계열 원본
